@@ -1,9 +1,9 @@
 import sys
+
 class Library:
     def __init__(self, filename = "books.txt"):
         self.filename = filename
         self.file = open(self.filename, "a+")
-        
         
     def __del__(self):
         self.file.close()
@@ -17,7 +17,7 @@ class Library:
     def addBook(self):
         title = input("Enter the book title: ").title()
         author = input("Enter the author of the book: ").title()
-        
+
         while True:
             releaseYear = input("Enter the release year of the book: ")
             try:
@@ -31,20 +31,27 @@ class Library:
                 value = int(numberPages)
                 break
             except ValueError:
-                print("The number of pages has to be a number.")
-        
+                print("The number of pages has to be a number.") 
+
         bookInfo = f"{title}, {author}, {releaseYear}, {numberPages}\n"
         self.file.write(bookInfo)
 
     def removeBook(self):
-        removeThisBook = input("Enter the title of the book you want to remove: ").title()
-        self.file.seek(0)
-        books = self.file.read().splitlines()
-        updatedBooks = [book for book in books if removeThisBook not in book]
-        self.file.seek(0)
-        self.file.truncate()
-        for book in updatedBooks:
-            self.file.write(book + "\n")
+        while True:
+            removeThisBook = input("Enter the title of the book you want to remove: ").title()
+            self.file.seek(0)
+            books = self.file.read().splitlines()
+            bookInfo = [book.split(",") for book in books]
+            titles = [book[0] for book in bookInfo]
+            if removeThisBook in titles:           
+                updatedBooks = [book for book in books if removeThisBook != book.split(",")[0].title()]
+                self.file.seek(0)
+                self.file.truncate()
+                for book in updatedBooks:
+                    self.file.write(book + "\n")
+                break
+            else:
+                print("There is no book of that title.Enter a title that is in books.txt")
 
 while True:
     lib = Library()
@@ -55,6 +62,7 @@ while True:
     print("q) Quit")
 
     choice = input("What is your choice? ")
+    print("")
     if choice == "1":
         lib.listBooks()
     elif choice == "2":
